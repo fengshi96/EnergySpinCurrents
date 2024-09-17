@@ -111,6 +111,7 @@ int main(int argc, char *argv[]) {
         StartDynamics(str1,Parameters,Lat,Basis,Hamiltonian,Lanczos,Psi);
     }
 
+
 //    Observ.measureLocalJs(Psi);
 //    Observ.measureLocalJe(Psi);
 //
