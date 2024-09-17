@@ -19,7 +19,7 @@ LancType=All
 #### LancType=OnlyEgs (energy only), GS (returns ground-stateVector), All (return m number of states)
 
 LocalSkw=0
-SpinCurrDynamics=0
+SpinCurrDynamics=1
 EnergyCurrDynamics=1
 
 Kxx=1.0

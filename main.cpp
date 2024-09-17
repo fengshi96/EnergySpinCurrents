@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXcd Sxi, Syi, Szi, Spi, Smi;
     Observ.measureLocalS(Psi, Sxi, Syi, Szi, Spi, Smi);
     Observ.measureLocalJe(Psi);
-    if (Parameters.LocalSkw){
+    if (Parameters.SpinCurrDynamics){
         cout << " ==================================================================== " << endl;
         cout << "                   Spin Dynamical Correlations		                   " << endl;
         cout << " ==================================================================== " << endl;

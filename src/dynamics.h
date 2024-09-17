@@ -243,33 +243,31 @@ void DynJsJs(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
 
     Eigen::VectorXcd Jtx = Observ.ApplyJsxTotal(Psi);
     Eigen::VectorXcd Jty = Observ.ApplyJsyTotal(Psi);
-    Eigen::VectorXcd Jtz = Observ.ApplyJszTotal(Psi);
-    Eigen::VectorXcd Jt = Jtx + Jty + Jtz;
+    // Eigen::VectorXcd Jtz = Observ.ApplyJszTotal(Psi);
+    Eigen::VectorXcd Jt = Jtx + Jty;
     Eigen::VectorXcd JSx(1), JSy(1), JSz(1), JSt(1);
     JSx.setZero(); JSy.setZero(); JSz.setZero(); JSt.setZero();
     JSx[0] = Psi.dot(Jtx);
     JSy[0] = Psi.dot(Jty);
-    JSz[0] = Psi.dot(Jtz);
     JSt[0] = Psi.dot(Jt);
 
-    Eigen::MatrixXcd Overlap(ExtState,4); Overlap.setZero();
+    Eigen::MatrixXcd Overlap(ExtState,3); Overlap.setZero();
 #pragma omp parallel for
     for (int n=0; n<someSt; n++) {
         Eigen::VectorXcd nstate = DLancGS.PsiAll[n];
         Overlap(n,0) = nstate.dot(Jtx);
         Overlap(n,1) = nstate.dot(Jty);
-        Overlap(n,2) = nstate.dot(Jtz);
-        Overlap(n,3) = nstate.dot(Jt);
+        Overlap(n,2) = nstate.dot(Jt);
     }
 #pragma omp barrier
 
     ofstream myfile;
     myfile.open ("JsJs_outSpectrum.real");
 
-    Eigen::VectorXcd data(6); data.setZero();
+    Eigen::VectorXcd data(4); data.setZero();
     for (int om=0; om<=omegasteps;om++) {
         double omega = domega*om;
-        Eigen::MatrixXcd Itensity(3,3);
+        Eigen::MatrixXcd Itensity(2,2);
         Itensity.setZero();
         dcomplex sum(0,0);
 
@@ -281,56 +279,45 @@ void DynJsJs(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
             // --- <n|J|gs> ---
             dcomplex tmpx = Overlap(n,0);
             dcomplex tmpy = Overlap(n,1);
-            dcomplex tmpz = Overlap(n,2);
-            dcomplex tmpt = Overlap(n,3);
+            dcomplex tmpt = Overlap(n,2);
 
 
             // --- <gs|J'|n> <n|J|gs> ---
             dcomplex tmpxx = conj(tmpx) * tmpx; // x x
             dcomplex tmpxy = conj(tmpx) * tmpy; // x y
-            dcomplex tmpxz = conj(tmpx) * tmpz; // x z
-
             dcomplex tmpyy = conj(tmpy) * tmpy; // y y
-            dcomplex tmpyz = conj(tmpy) * tmpz; // x z
-            dcomplex tmpzz = conj(tmpz) * tmpz; // z z
+            dcomplex tmpyx = conj(tmpy) * tmpx; // x z
 
             dcomplex tmptt = conj(tmpt) * tmpt; // t t
 
             Itensity(0,0) = Itensity(0,0) + tmpxx/denominator;
             Itensity(0,1) = Itensity(0,1) + tmpxy/denominator;
-            Itensity(0,2) = Itensity(0,2) + tmpxz/denominator;
-
             Itensity(1,1) = Itensity(1,1) + tmpyy/denominator;
-            Itensity(1,2) = Itensity(1,2) + tmpyz/denominator;
-            Itensity(2,2) = Itensity(2,2) + tmpzz/denominator;
+            Itensity(1,0) = Itensity(1,0) + tmpyx/denominator;
             sum = sum + tmptt/denominator;
         }
 
         // --- subtracting background elastic contribution ---
         Itensity(0,0) = Itensity(0,0) - conj(JSx[0])*JSx[0]/dnom1;
         Itensity(0,1) = Itensity(0,1) - conj(JSx[0])*JSy[0]/dnom1;
-        Itensity(0,2) = Itensity(0,2) - conj(JSx[0])*JSz[0]/dnom1;
         Itensity(1,1) = Itensity(1,1) - conj(JSy[0])*JSy[0]/dnom1;
-        Itensity(1,2) = Itensity(1,2) - conj(JSy[0])*JSz[0]/dnom1;
-        Itensity(2,2) = Itensity(2,2) - conj(JSz[0])*JSz[0]/dnom1;
+        Itensity(1,0) = Itensity(1,0) - conj(JSy[0])*JSz[0]/dnom1;
         sum = sum - conj(JSt[0])*JSt[0]/dnom1;
 
         data(0) = Itensity(0,0);
         data(1) = Itensity(1,1);
-        data(2) = Itensity(2,2);
-        data(3) = Itensity(0,1);
-        data(4) = Itensity(0,2);
-        data(5) = Itensity(1,2);
+        data(2) = Itensity(0,1);
+        data(3) = Itensity(1,0);
 
         myfile << omega << " \t ";
-        for(int kk=0;kk<6;kk++) myfile << data[kk].real() << " \t " << data[kk].imag() << " \t ";
+        for(int kk=0;kk<4;kk++) myfile << data[kk].real() << " \t " << data[kk].imag() << " \t ";
         myfile << sum.real() << " \t " << sum.imag();
         myfile << " \n ";
 
-        if(om%200==0) {
+        if(om%10==0) {
             cout << omega << " \t ";
-            for(int kk=0;kk<6;kk++) cout << data[kk].real() << " \t " << data[kk].imag() << " \t ";
-            cout << sum.real() << " \t " << sum.imag();
+            for(int kk=0;kk<4;kk++) cout << data[kk].imag() << " \t ";
+            cout << sum.imag();
             cout << " \n ";
         }
     }
@@ -434,7 +421,7 @@ void DynJeJe(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
         myfile << sum.imag();
         myfile << " \n ";
 
-        if(om%1==0) {
+        if(om%10==0) {
             cout << omega << " \t ";
             for(int kk=0;kk<4;kk++) cout << data[kk].imag() << " \t ";
             cout << sum.imag();

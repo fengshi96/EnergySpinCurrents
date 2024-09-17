@@ -46,8 +46,8 @@ public:
             return ApplyJsx(inV, site);
         } else if (OpA == "Jsy") {
             return ApplyJsy(inV, site);
-        } else if (OpA == "Jsz") {
-            return ApplyJsz(inV, site);
+        // } else if (OpA == "Jsz") {
+        //     return ApplyJsz(inV, site);
         } else if (OpA == "Jex") {
             return ApplyJex(inV, site);
         } else if (OpA == "Jey") {
@@ -73,14 +73,14 @@ public:
         for(int si=0; si<Nsite_; si++) {
             Eigen::VectorXcd tmpx = ApplyJsx(GS_, si);
             Eigen::VectorXcd tmpy = ApplyJsy(GS_, si);
-            Eigen::VectorXcd tmpz = ApplyJsz(GS_, si);
+            // Eigen::VectorXcd tmpz = ApplyJsz(GS_, si);
 
             dcomplex ox = GS_.dot(tmpx);
             dcomplex oy = GS_.dot(tmpy);
-            dcomplex oz = GS_.dot(tmpz);
+            // dcomplex oz = GS_.dot(tmpz);
 
-            cout << si << " \t " << ox << " \t " << oy << " \t " << oz << " \t ";
-            cout << ox+oy+oz << endl;
+            cout << si << " \t " << ox << " \t " << oy << " \t " << " \t ";
+            cout << ox+oy << endl;
         }
     }
 
@@ -157,8 +157,51 @@ public:
         return Corr;
     }
 
-    // -----------------------------------
-    Eigen::VectorXcd ApplyJsz(Eigen::VectorXcd& GS_, const int& si) {
+    // // -----------------------------------
+    // Eigen::VectorXcd ApplyJsz(Eigen::VectorXcd& GS_, const int& si) {
+    //     int Nsite_ = variables_.NumberofSites;
+    //     assert(si<Nsite_);
+    //     int xneigh = Lat_.N1neigh_(si,2); // - x neigh
+    //     int yneigh = Lat_.N1neigh_(si,1); // - y neigh
+    //     int zneigh = Lat_.N1neigh_(si,0); // - z neigh
+
+    //     assert(zneigh<Nsite_); // z - neigh
+    //     assert(yneigh<Nsite_); // y - neigh
+    //     assert(xneigh<Nsite_); // x - neigh
+
+    //     int Hsize = Basis_.basis.size();
+    //     Eigen::VectorXcd outL1(Hsize); outL1.setZero();
+    //     Eigen::VectorXcd outL2(Hsize); outL2.setZero();
+    //     Eigen::VectorXcd outR1(Hsize); outR1.setZero();
+    //     Eigen::VectorXcd outR2(Hsize); outR2.setZero();
+    //     Eigen::VectorXcd outB1(Hsize); outB1.setZero();
+    //     Eigen::VectorXcd outB2(Hsize); outB2.setZero();
+
+    //     // Sx_i . Sy_i+y
+    //     outL1 = ApplyOp(GS_, "Sy", yneigh);  // outL1 = Sy |GS>
+    //     outL2 = ApplyOp(outL1, "Sx", si);  // outL2 = Sx (Sy |GS>) = Sx |outL1>
+    //     outL2 = variables_.Kyy*outL2;
+
+    //     // Sy_i . Sx_i+x
+    //     outR1 = ApplyOp(GS_, "Sx", xneigh);
+    //     outR2 = ApplyOp(outR1, "Sy", si);
+    //     outR2 = variables_.Kxx*outR2;
+
+    //     // Sy_i
+    //     outB1 = ApplyOp(GS_, "Sy", si);
+    //     outB1 = variables_.Bxx*outB1;
+
+    //     // Sx_i
+    //     outB2 = ApplyOp(GS_, "Sx", si);
+    //     outB2 = variables_.Byy*outB2;
+
+    //     return outL2 - outR2; // - outB1 + outB2;
+    // }
+
+    // ----------Spin Current---------------------
+    Eigen::VectorXcd ApplyJsy(Eigen::VectorXcd& GS_, const int& si) {
+        // Jsy along a2, or i+y; 
+        // si are sites on B sublattice
         int Nsite_ = variables_.NumberofSites;
         assert(si<Nsite_);
         int xneigh = Lat_.N1neigh_(si,2); // - x neigh
@@ -178,69 +221,30 @@ public:
         Eigen::VectorXcd outB2(Hsize); outB2.setZero();
 
         // Sx_i . Sy_i+y
-        outL1 = ApplyOp(GS_, "Sy", yneigh);  // outL1 = Sy |GS>
-        outL2 = ApplyOp(outL1, "Sx", si);  // outL2 = Sx (Sy |GS>) = Sx |outL1>
+        outL1 = ApplyOp(GS_, "Sy", yneigh);
+        outL2 = ApplyOp(outL1, "Sx", si);
         outL2 = variables_.Kyy*outL2;
 
-        // Sy_i . Sx_i+x
-        outR1 = ApplyOp(GS_, "Sx", xneigh);
+        // Sy_i . Sx_i+y
+        outR1 = ApplyOp(GS_, "Sx", yneigh);
         outR2 = ApplyOp(outR1, "Sy", si);
-        outR2 = variables_.Kxx*outR2;
+        outR2 = variables_.Kyy*outR2;
 
-        // Sy_i
-        outB1 = ApplyOp(GS_, "Sy", si);
-        outB1 = variables_.Bxx*outB1;
+        // // Sz_i
+        // outB1 = ApplyOp(GS_, "Sz", si);
+        // outB1 = variables_.Bxx*outB1;
 
-        // Sx_i
-        outB2 = ApplyOp(GS_, "Sx", si);
-        outB2 = variables_.Byy*outB2;
-
-        return outL2 - outR2; // - outB1 + outB2;
-    }
-
-    // ----------Spin Current---------------------
-    Eigen::VectorXcd ApplyJsy(Eigen::VectorXcd& GS_, const int& si) {
-        int Nsite_ = variables_.NumberofSites;
-        assert(si<Nsite_);
-        int xneigh = Lat_.N1neigh_(si,2); // - x neigh
-        int yneigh = Lat_.N1neigh_(si,1); // - y neigh
-        int zneigh = Lat_.N1neigh_(si,0); // - z neigh
-
-        assert(zneigh<Nsite_); // z - neigh
-        assert(yneigh<Nsite_); // y - neigh
-        assert(xneigh<Nsite_); // x - neigh
-
-        int Hsize = Basis_.basis.size();
-        Eigen::VectorXcd outL1(Hsize); outL1.setZero();
-        Eigen::VectorXcd outL2(Hsize); outL2.setZero();
-        Eigen::VectorXcd outR1(Hsize); outR1.setZero();
-        Eigen::VectorXcd outR2(Hsize); outR2.setZero();
-        Eigen::VectorXcd outB1(Hsize); outB1.setZero();
-        Eigen::VectorXcd outB2(Hsize); outB2.setZero();
-
-        // Sz_i . Sx_i+x
-        outL1 = ApplyOp(GS_, "Sx", xneigh);
-        outL2 = ApplyOp(outL1, "Sz", si);
-        outL2 = variables_.Kxx*outL2;
-
-        // Sx_i . Sz_i+z
-        outR1 = ApplyOp(GS_, "Sz", zneigh);
-        outR2 = ApplyOp(outR1, "Sx", si);
-        outR2 = variables_.Kzz*outR2;
-
-        // Sz_i
-        outB1 = ApplyOp(GS_, "Sz", si);
-        outB1 = variables_.Bxx*outB1;
-
-        // Sx_i
-        outB2 = ApplyOp(GS_, "Sx", si);
-        outB2 = variables_.Bzz*outB2;
+        // // Sx_i
+        // outB2 = ApplyOp(GS_, "Sx", si);
+        // outB2 = variables_.Bzz*outB2;
 
         return outL2 - outR2; // + outB1 - outB2;
     }
 
     // -----------------------------------
     Eigen::VectorXcd ApplyJsx(Eigen::VectorXcd& GS_, const int& si) {
+        // Jsx along a1, or i+x; 
+        // si are sites on A sublattice
         int Nsite_ = variables_.NumberofSites;
         assert(si<Nsite_);
         int xneigh = Lat_.N1neigh_(si,2); // - x neigh
@@ -259,23 +263,23 @@ public:
         Eigen::VectorXcd outB1(Hsize); outB1.setZero();
         Eigen::VectorXcd outB2(Hsize); outB2.setZero();
 
-        // Sy_i . Sz_i+z
-        outL1 = ApplyOp(GS_, "Sz", zneigh);
-        outL2 = ApplyOp(outL1, "Sy", si);
-        outL2 = variables_.Kzz*outL2;
+        // Sx_i . Sy_i+x
+        outL1 = ApplyOp(GS_, "Sy", xneigh);
+        outL2 = ApplyOp(outL1, "Sx", si);
+        outL2 = variables_.Kxx*outL2;
 
-        // Sz_i . Sy_i+y
-        outR1 = ApplyOp(GS_, "Sy", yneigh);
-        outR2 = ApplyOp(outR1, "Sz", si);
-        outR2 = variables_.Kyy*outR2;
+        // Sy_i . Sx_i+x
+        outR1 = ApplyOp(GS_, "Sx", xneigh);
+        outR2 = ApplyOp(outR1, "Sy", si);
+        outR2 = variables_.Kxx*outR2;
 
-        // Sz_i
-        outB1 = ApplyOp(GS_, "Sz", si);
-        outB1 = variables_.Byy*outB1;
+        // // Sz_i
+        // outB1 = ApplyOp(GS_, "Sz", si);
+        // outB1 = variables_.Byy*outB1;
 
-        // Sy_i
-        outB2 = ApplyOp(GS_, "Sy", si);
-        outB2 = variables_.Bzz*outB2;
+        // // Sy_i
+        // outB2 = ApplyOp(GS_, "Sy", si);
+        // outB2 = variables_.Bzz*outB2;
 
         return outL2 - outR2; // - outB1 + outB2;
     }
@@ -447,13 +451,13 @@ public:
 
         Eigen::VectorXcd out1(Hsize); out1.setZero();
         Eigen::VectorXcd out2(Hsize); out2.setZero();
-        Eigen::VectorXcd out3(Hsize); out3.setZero();
+        // Eigen::VectorXcd out3(Hsize); out3.setZero();
 
         out1 = ApplyJsx(GS_,si);
         out2 = ApplyJsy(GS_,si);
-        out3 = ApplyJsz(GS_,si);
+        // out3 = ApplyJsz(GS_,si);
 
-        return out1 + out2 + out3;
+        return out1 + out2;
     }
 
 
@@ -699,7 +703,7 @@ public:
         Eigen::VectorXcd out(Hsize);
         out.setZero();
 
-        for (int s=0; s<Nsite_;s++) {
+        for (int s=0; s<Nsite_;s=s+2) {
             out += ApplyJsx(GS_, s);
         }
         return out;
@@ -711,24 +715,24 @@ public:
         Eigen::VectorXcd out(Hsize);
         out.setZero();
 
-        for (int s=0; s<Nsite_;s++) {
+        for (int s=1; s<Nsite_;s=s+2) {
             out += ApplyJsy(GS_, s);
         }
         return out;
     }
 
-    // -----------------------------------
-    Eigen::VectorXcd ApplyJszTotal(Eigen::VectorXcd& GS_) {
-        int Nsite_ = variables_.NumberofSites;
-        int Hsize = Basis_.basis.size();
-        Eigen::VectorXcd out(Hsize);
-        out.setZero();
+    // // -----------------------------------
+    // Eigen::VectorXcd ApplyJszTotal(Eigen::VectorXcd& GS_) {
+    //     int Nsite_ = variables_.NumberofSites;
+    //     int Hsize = Basis_.basis.size();
+    //     Eigen::VectorXcd out(Hsize);
+    //     out.setZero();
 
-        for (int s=0; s<Nsite_;s++) {
-            out += ApplyJsz(GS_, s);
-        }
-        return out;
-    }
+    //     for (int s=0; s<Nsite_;s++) {
+    //         out += ApplyJsz(GS_, s);
+    //     }
+    //     return out;
+    // }
 
 private:
     ConstVariables& variables_;

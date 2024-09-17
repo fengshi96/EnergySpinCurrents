@@ -3,5 +3,9 @@
         "args": [
             "/space/go76jez/Projects/EnergySpinCurrents/Midinput.inp"
         ]
+    },
+    "files.associations": {
+        "complex": "cpp",
+        "iostream": "cpp"
     }
 }
