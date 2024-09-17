@@ -1,0 +1,3 @@
+/Users/feng.934/Projects/5.SpinEnergyCurrents/LanczosCond/cmake-build-debug/CMakeFiles/LanczosCond.dir
+/Users/feng.934/Projects/5.SpinEnergyCurrents/LanczosCond/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/feng.934/Projects/5.SpinEnergyCurrents/LanczosCond/cmake-build-debug/CMakeFiles/rebuild_cache.dir

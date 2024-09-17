@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/build",
+  "command": "/usr/bin/clang++  -I/usr/local/include/eigen3 -I/opt/homebrew/opt/libomp/include -I/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/./src -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fPIC -Wno-gcc-compat -o CMakeFiles/LanczosCond.dir/main.cpp.o -c /Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/main.cpp",
+  "file": "/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/main.cpp",
+  "output": "CMakeFiles/LanczosCond.dir/main.cpp.o"
+}
+]
