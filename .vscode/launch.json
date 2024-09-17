@@ -5,17 +5,28 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) Launch",
+            "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/build/LanczosCond",
-            "args": ["/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond/Midinput.inp"],
+            "program": "/space/go76jez/Projects/EnergySpinCurrents/build/LanczosCond",
+            "args": ["/space/go76jez/Projects/EnergySpinCurrents/Midinput.inp"],
             "stopAtEntry": false,
-            "cwd": "/Users/shifeng/Projects/5.SpinEnergyCurrents/LanczosCond",
+            "cwd": "/space/go76jez/Projects/EnergySpinCurrents",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "lldb"
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
         }
-
     ]
 }

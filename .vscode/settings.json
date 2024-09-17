@@ -1,0 +1,7 @@
+{
+    "cmake.debugConfig": {
+        "args": [
+            "/space/go76jez/Projects/EnergySpinCurrents/Midinput.inp"
+        ]
+    }
+}
