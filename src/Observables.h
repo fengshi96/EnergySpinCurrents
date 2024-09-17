@@ -338,6 +338,12 @@ public:
         Eigen::VectorXcd outR2(Hsize); outR2.setZero();
         Eigen::VectorXcd outR3(Hsize); outR3.setZero();
 
+        Eigen::VectorXcd outHR1(Hsize); outHR1.setZero();
+        Eigen::VectorXcd outHR2(Hsize); outHR2.setZero();
+
+        Eigen::VectorXcd outHL1(Hsize); outHL1.setZero();
+        Eigen::VectorXcd outHL2(Hsize); outHL2.setZero();
+
         // Sy_i . Sz_iy . Sx_iy+x
         outL1 = ApplyOp(GS_,   "Sx", iypx);
         outL2 = ApplyOp(outL1, "Sz", iy);
@@ -350,7 +356,17 @@ public:
         outR3 = ApplyOp(outR2, "Sy", si);
         outR3 = variables_.Kyy*variables_.Kzz*outR3;
 
-        return outL3 - outR3;
+        // Sy_i Sz_iy
+        outHL1 = ApplyOp(GS_, "Sz", iy);
+        outHL2 = ApplyOp(outHL1, "Sy", si);
+        outHL2 = variables_.Bxx*variables_.Kyy*outHL2;
+
+        // Sy_i Sx_iy
+        outHR1 = ApplyOp(GS_, "Sx", iy);
+        outHR2 = ApplyOp(outHR1, "Sy", si);
+        outHR2 = variables_.Bzz*variables_.Kyy*outHR2;
+
+        return outL3 - outR3 + outHL2 - outHR2;
     }
 
     // -----------------------------------
@@ -373,19 +389,35 @@ public:
         Eigen::VectorXcd outR2(Hsize); outR2.setZero();
         Eigen::VectorXcd outR3(Hsize); outR3.setZero();
 
+        Eigen::VectorXcd outHR1(Hsize); outHR1.setZero();
+        Eigen::VectorXcd outHR2(Hsize); outHR2.setZero();
+
+        Eigen::VectorXcd outHL1(Hsize); outHL1.setZero();
+        Eigen::VectorXcd outHL2(Hsize); outHL2.setZero();
+
         // Sx_i . Sz_ix . Sy_ix+y
-        outL1 = ApplyOp(GS_, "Sy", ixpy);
-        outL2 = ApplyOp(outL1, "Sz", ix);
-        outL3 = ApplyOp(outL2, "Sx", si);
-        outL3 = variables_.Kxx*variables_.Kyy*outL3;
+        outR1 = ApplyOp(GS_, "Sy", ixpy);
+        outR2 = ApplyOp(outR1, "Sz", ix);
+        outR3 = ApplyOp(outR2, "Sx", si);
+        outR3 = variables_.Kxx*variables_.Kyy*outR3;
 
         // Sx_i . Sy_ix . Sz_ix+z
-        outR1 = ApplyOp(GS_, "Sz", ixpz);
-        outR2 = ApplyOp(outR1, "Sy", ix);
-        outR3 = ApplyOp(outR2, "Sx", si);
-        outR3 = variables_.Kxx*variables_.Kzz*outR3;
+        outL1 = ApplyOp(GS_, "Sz", ixpz);
+        outL2 = ApplyOp(outL1, "Sy", ix);
+        outL3 = ApplyOp(outL2, "Sx", si);
+        outL3 = variables_.Kxx*variables_.Kzz*outL3;
 
-        return outR3 - outL3;
+        // Sy_i Sz_iy
+        outHL1 = ApplyOp(GS_, "Sy", ix);
+        outHL2 = ApplyOp(outHL1, "Sx", si);
+        outHL2 = variables_.Bxx*variables_.Kyy*outHL2;
+
+        // Sy_i Sx_iy
+        outHR1 = ApplyOp(GS_, "Sz", ix);
+        outHR2 = ApplyOp(outHR1, "Sx", si);
+        outHR2 = variables_.Bzz*variables_.Kyy*outHR2;
+
+        return outL3 - outR3 + outHL2 - outHR2;
     }
 
     // -----------------------------------
