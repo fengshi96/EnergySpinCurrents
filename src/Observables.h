@@ -370,7 +370,7 @@ public:
         outHR2 = ApplyOp(outHR1, "Sy", si);
         outHR2 = variables_.Bzz*variables_.Kyy*outHR2;
 
-        return outL3 - outR3 + outHL2 - outHR2;
+        return outL3 - outR3 + (outHL2 - outHR2);
     }
 
     // -----------------------------------
@@ -400,7 +400,7 @@ public:
         Eigen::VectorXcd outHL2(Hsize); outHL2.setZero();
 
         // Sx_i . Sz_ix . Sy_ix+y
-        outR1 = ApplyOp(GS_, "Sy", ixpy);
+        outR1 = ApplyOp(GS_, "Sy", ixpy);  
         outR2 = ApplyOp(outR1, "Sz", ix);
         outR3 = ApplyOp(outR2, "Sx", si);
         outR3 = variables_.Kxx*variables_.Kyy*outR3;
@@ -421,7 +421,7 @@ public:
         outHR2 = ApplyOp(outHR1, "Sx", si);
         outHR2 = variables_.Bzz*variables_.Kyy*outHR2;
 
-        return outL3 - outR3 + outHL2 - outHR2;
+        return outL3 - outR3 + (outHL2 - outHR2);  //!!!!! Check Signs
     }
 
     // -----------------------------------

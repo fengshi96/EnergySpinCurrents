@@ -228,7 +228,7 @@ void DynJsJs(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
     int centeral_site = Parameters.SpecialSite;
     cout << setprecision(8);
 
-    int omegasteps=1000;
+    int omegasteps=500;
     double domega=0.002;
     double eta = 0.005;
     double Eg = DLancGS.TriDeval(0);
@@ -304,10 +304,10 @@ void DynJsJs(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
         Itensity(1,0) = Itensity(1,0) - conj(JSy[0])*JSz[0]/dnom1;
         sum = sum - conj(JSt[0])*JSt[0]/dnom1;
 
-        data(0) = Itensity(0,0);
-        data(1) = Itensity(1,1);
-        data(2) = Itensity(0,1);
-        data(3) = Itensity(1,0);
+        data(0) = Itensity(0,0); // xx
+        data(1) = Itensity(1,1); // yy
+        data(2) = Itensity(0,1); // xy
+        data(3) = Itensity(1,0); // yx
 
         myfile << omega << " \t ";
         for(int kk=0;kk<4;kk++) myfile << data[kk].real() << " \t " << data[kk].imag() << " \t ";
@@ -338,7 +338,7 @@ void DynJeJe(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
     int centeral_site = Parameters.SpecialSite;
     cout << setprecision(8);
 
-    int omegasteps=1000;
+    int omegasteps=500;
     double domega=0.002;
     double eta = 0.005;
     double Eg = DLancGS.TriDeval(0);
@@ -363,7 +363,7 @@ void DynJeJe(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
 #pragma omp parallel for
     for (int n=0; n<someSt; n++) {
         Eigen::VectorXcd nstate = DLancGS.PsiAll[n];
-        Overlap(n,0) = nstate.dot(Jtx);
+        Overlap(n,0) = nstate.dot(Jtx);  // <n|Jtx|0>
         Overlap(n,1) = nstate.dot(Jty);
         Overlap(n,2) = nstate.dot(Jt);
     }
@@ -411,10 +411,10 @@ void DynJeJe(string& dynstr,ConstVariables& Parameters, Lattice& Lat,
         Itensity(1,0) = Itensity(1,0) - conj(Jey[0])*Jez[0]/dnom1;
         sum = sum - conj(Jet[0])*Jet[0]/dnom1;
 
-        data(0) = Itensity(0,0);
-        data(1) = Itensity(1,1);
-        data(2) = Itensity(0,1);
-        data(3) = Itensity(1,0);
+        data(0) = Itensity(0,0); // xx
+        data(1) = Itensity(1,1); // yy
+        data(2) = Itensity(0,1); // xy
+        data(3) = Itensity(1,0); // yx
 
         myfile << omega << " \t ";
         for(int kk=0;kk<4;kk++) myfile << data[kk].imag() << " \t ";
